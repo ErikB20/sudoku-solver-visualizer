@@ -10,6 +10,7 @@ BASICFONT = pygame.font.Font('freesansbold.ttf', BASICFONTSIZE)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
+DARK_GREEN = (9, 148, 65)
 RED = (255, 0, 0)
 WN_HEIGHT = 800
 WN_WIDTH = 720
@@ -27,7 +28,11 @@ class Grid:
         self.squareSize = self.length / 9
 
     # draws the sudoku grid, using pygame.draw.line()
-    def updateGrid(self):
+    def updateGrid(self, solved=False):
+        if solved:
+            color = DARK_GREEN
+        else:
+            color = BLACK
         for dir in range(2):
             for line in range(0, 10):
                 if line == 0 or line == 3 or line == 6 or line == 9:
@@ -35,9 +40,9 @@ class Grid:
                 else:
                     width = 3
                 if dir == 0:
-                    pygame.draw.line(WN, BLACK, (line * self.squareSize, 0), (line * self.squareSize, self.length), width)
+                    pygame.draw.line(WN, color, (line * self.squareSize, 0), (line * self.squareSize, self.length), width)
                 elif dir == 1:
-                    pygame.draw.line( WN, BLACK, (0, line * self.squareSize), (self.length, line * self.squareSize), width )
+                    pygame.draw.line( WN, color, (0, line * self.squareSize), (self.length, line * self.squareSize), width )
         self.fillNums()
         pygame.display.update()
 
@@ -78,7 +83,7 @@ def solve(grid):
                     # unnecessary for algorithm, but displays on screen the algorithm
                     # looping through each num, at a reasonable speed
                     grid.matrix[row][col] = pot
-                    clock.tick(15)
+                    clock.tick(10)
                     WN.fill( WHITE )
                     grid.updateGrid()
                     drawBorder(RED, row, col)
@@ -91,7 +96,7 @@ def solve(grid):
                         solve(grid)
                         grid.matrix[row][col] = 0 # backtracking step
                 return
-    grid.updateGrid()
+    grid.updateGrid(True)
     finished()
 
 def finished():
@@ -102,7 +107,7 @@ def finished():
         solved = BASICFONT.render('Solved!', False, BLACK)
         # rec(surface, color, ( x, y, width, height))
         pygame.draw.rect(WN, GREEN, (WN_WIDTH/2 - 160, WN_HEIGHT - 70, 320, 65))
-        pygame.draw.rect(WN, BLACK, (WN_WIDTH/2 - 160, WN_HEIGHT - 70, 320, 65), 3)
+        pygame.draw.rect(WN, BLACK, (WN_WIDTH/2 - 160, WN_HEIGHT - 70, 320, 65), 4)
         WN.blit(solved, (WN_WIDTH//2 - 80, WN_HEIGHT - 55))
         pygame.display.update()
 
