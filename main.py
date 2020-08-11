@@ -1,5 +1,7 @@
 import pygame
 import sys
+import random
+from puzzles import puzzleList
 
 pygame.init()
 
@@ -85,26 +87,28 @@ def isValid(potential, matrix, row, col):
     # if it passes all the checks, return true
     return True
 
-# Method that solves a sudoku puzzle using backtracking algorithm
-def solve(grid):
+# Method to solve a sudoku puzzle using backtracking algorithm
+def visualize(grid, coloring=True):
     for row in range(9):
         for col in range(9):
             if grid.matrix[row][col] == 0:
                 for pot in range(1, 10):
                     # unnecessary for algorithm, but displays on screen the algorithm
                     # looping through each num, at a reasonable speed
-                    grid.matrix[row][col] = pot
-                    clock.tick(10)
-                    WN.fill( WHITE )
-                    grid.updateGrid()
-                    drawBorder(RED, row, col)
-                    grid.matrix[row][col] = 0
+                    if coloring:
+                        grid.matrix[row][col] = pot
+                        clock.tick(30)
+                        WN.fill( WHITE )
+                        grid.updateGrid()
+                        drawBorder(RED, row, col)
+                        grid.matrix[row][col] = 0
 
                     if isValid(pot, grid.matrix, row, col):
-                        drawBorder(GREEN, row, col)
+                        if coloring:
+                            drawBorder(GREEN, row, col)
                         # if the potential num is valid, change it in the grid
                         grid.matrix[row][col] = pot
-                        solve(grid)
+                        visualize(grid, coloring)
                         grid.matrix[row][col] = 0 # backtracking step
                 return
     grid.updateGrid(True)
@@ -122,6 +126,7 @@ def finished():
         WN.blit(solved, (WN_WIDTH//2 - 80, WN_HEIGHT - 55))
         pygame.display.update()
 
+# Draws a border around each square
 def drawBorder(color, row, col):
     pygame.draw.rect(WN, color, (col * 80, row * 80, 80, 80), 3)
     pygame.display.update()
@@ -129,28 +134,18 @@ def drawBorder(color, row, col):
 def game(sudokuPuzzle):
     gameGrid = Grid(sudokuPuzzle, WN_WIDTH)
     WN.fill( WHITE )
-    pressedSpace = False
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()        
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    solve(gameGrid)
+                    visualize(gameGrid)
+                elif event.key == pygame.K_RETURN:
+                    visualize(gameGrid, False)
         gameGrid.updateGrid()
         pygame.display.update()
 
-
-puz1 = '000079065000003002005060093340050106000000000608020059950010600700600000820390000'
-puz2 = '102004070000902800009003004000240006000107000400068000200800700007501000080400109'
-puz3 = '002008050000040070480072000008000031600080005570000600000960048090020000030800900'
-user_choice = input('Choose a puzzle you want: 1, 2, or 3:\n> ')
-if user_choice == '1':
-    puz = formMatrix(puz1)
-elif user_choice == '2':
-    puz = formMatrix(puz2)
-elif user_choice == '3':
-    puz = formMatrix(puz3)
-else:
-    print('that isnt 1, 2, or 3')
+puz = puzzleList[random.randint(0,len(puzzleList)-1)]
+puz = formMatrix(puz)
 game(puz)
