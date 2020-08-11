@@ -54,6 +54,17 @@ class Grid:
                     squareNum = BASICFONT.render(str(self.matrix[row][col]), False, BLACK)
                     WN.blit(squareNum, (25 + col * self.squareSize, 20 + row * self.squareSize))
 
+# takes in a string puzzle and returns a matrix form
+def formMatrix(stringPuzzle):
+    grid = []
+    row = []
+    for index in range(len(stringPuzzle)):
+        if index != 0 and index % 9 == 0:
+            grid.append(row)
+            row = []
+        row.append(int(stringPuzzle[index]))
+    grid.append(row)
+    return grid
 
 # Method to check if a possible position in square is valid
 def isValid(potential, matrix, row, col):
@@ -115,22 +126,10 @@ def drawBorder(color, row, col):
     pygame.draw.rect(WN, color, (col * 80, row * 80, 80, 80), 3)
     pygame.display.update()
 
-def game():
-    gameSudoku = [
-    [0, 0, 0, 2, 6, 0, 7, 0, 1],
-    [6, 8, 0, 0, 7, 0, 0, 9, 0],
-    [1, 9, 0, 0, 0, 4, 5, 0, 0],
-    [8, 2, 0, 1, 0, 0, 0, 4, 0],
-    [0, 0, 4, 6, 0, 2, 9, 0, 0],
-    [0, 5, 0, 0, 0, 3, 0, 2, 8],
-    [0, 0, 9, 3, 0, 0, 0, 7, 4],
-    [0, 4, 0, 0, 5, 0, 0, 3, 6],
-    [7, 0, 3, 0, 1, 8, 0, 0, 0]
-    ]
-    gameGrid = Grid(gameSudoku, WN_WIDTH)
+def game(sudokuPuzzle):
+    gameGrid = Grid(sudokuPuzzle, WN_WIDTH)
     WN.fill( WHITE )
     pressedSpace = False
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -141,4 +140,17 @@ def game():
         gameGrid.updateGrid()
         pygame.display.update()
 
-game()
+
+puz1 = '000079065000003002005060093340050106000000000608020059950010600700600000820390000'
+puz2 = '102004070000902800009003004000240006000107000400068000200800700007501000080400109'
+puz3 = '002008050000040070480072000008000031600080005570000600000960048090020000030800900'
+user_choice = input('Choose a puzzle you want: 1, 2, or 3:\n> ')
+if user_choice == '1':
+    puz = formMatrix(puz1)
+elif user_choice == '2':
+    puz = formMatrix(puz2)
+elif user_choice == '3':
+    puz = formMatrix(puz3)
+else:
+    print('that isnt 1, 2, or 3')
+game(puz)
